@@ -28,7 +28,7 @@ fun MainView(
     viewModel: MainPageViewModel
 ) {
 
-    val ViewModel : MainPageViewModel = viewModel();
+
 
     Column (
         modifier = modifier
@@ -39,11 +39,11 @@ fun MainView(
         if (viewModel.noHayDatos.value){
             Text(text = "no hay nada para mostrar")
         } else {
-            Text(text = ViewModel.ciudad.value, style = MaterialTheme.typography.titleMedium)
+            Text(text = viewModel.ciudad.value, style = MaterialTheme.typography.titleMedium)
 
-            Text(text = "${ViewModel.temperatura.value}°", style = MaterialTheme.typography.titleLarge)
-            Text(text = ViewModel.descripcion.value, style = MaterialTheme.typography.bodyMedium)
-            Text(text = "sensación térmica: ${ViewModel.st.value}°", style = MaterialTheme.typography.bodyMedium)
+            Text(text = "${viewModel.temperatura.value}°", style = MaterialTheme.typography.titleLarge)
+            Text(text = viewModel.descripcion.value, style = MaterialTheme.typography.bodyMedium)
+            Text(text = "sensación térmica: ${viewModel.st.value}°", style = MaterialTheme.typography.bodyMedium)
         }
 
 
