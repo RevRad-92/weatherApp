@@ -1,15 +1,23 @@
 package com.example.weatherapp
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import java.nio.file.Files.copy
 
+
+// View Model expone datos del modelo. La Main Page no accede directamente al modelo
 class MainPageViewModel : ViewModel() {
-    // variable observada (remember para q no se pierda al recomponerse)
-    val ciudad = mutableStateOf<String>("")
-    val temperatura = mutableStateOf<Int>(0)
-    val descripcion = mutableStateOf<String>("")
-    val st = mutableStateOf<Int>(0)
-    val noHayDatos = mutableStateOf(false)
+
+    var uiState by mutableStateOf<Estado>(Estado.Vacio)
+
+    // variable observada (remember para q no se pierda al recomponerse, solo cuando está dentro de un composable)
+//    val ciudad = mutableStateOf<String>("")
+//    val temperatura = mutableStateOf<Int>(0)
+//    val descripcion = mutableStateOf<String>("")
+//    val st = mutableStateOf<Int>(0)
+//    val noHayDatos = mutableStateOf(true)
 
     private val climaCordoba = Clima(
         ciudad = "Córdoba",
@@ -18,8 +26,8 @@ class MainPageViewModel : ViewModel() {
         humedad = 18.0F,
         st = 30,
         viento = 30,
-        latitud = 1231333,
-        longitud = 121212
+        latitud = -314135,
+        longitud = -6418105
     )
 
     private val climaCABA = Clima(
@@ -29,31 +37,42 @@ class MainPageViewModel : ViewModel() {
         humedad = 18.0F,
         st = 30,
         viento = 30,
-        latitud = 12314565,
-        longitud = 1214574
+        latitud = -3461315,
+        longitud = -5837723
     )
 
-    fun  borrarTodo(){
-        ciudad.value = "0"
-        temperatura.value = 0
-        descripcion.value = ""
-        st.value = 0
-        noHayDatos.value = true
+    fun ejecutarIntencion(intencion: Intencion){
+        when(intencion){
+            Intencion.BorrarTodo-> borrarTodo()
+            Intencion.MostrarCABA -> mostrarCABA()
+            Intencion.MostrarCordoba -> mostrarCordoba()
+            Intencion.MostrarError -> mostrarError()
+        }
     }
 
-    fun mostrarCordoba(){
-        ciudad.value = climaCordoba.ciudad
-        temperatura.value = climaCordoba.temperatura
-        descripcion.value = climaCordoba.estado
-        st.value = climaCordoba.st
-        noHayDatos.value = false
+    private fun mostrarError(){
+        uiState = Estado.Error("Este es un error de mentira")
+    }
+    private fun  borrarTodo(){
+        uiState = Estado.Vacio
     }
 
-    fun mostrarCABA(){
-        ciudad.value = climaCABA.ciudad
-        temperatura.value = climaCABA.temperatura
-        descripcion.value = climaCABA.estado
-        st.value = climaCABA.st
-        noHayDatos.value = false
+    private fun mostrarCordoba(){
+        uiState = Estado.Exitoso(
+            ciudad = climaCordoba.ciudad,
+            temperatura = climaCordoba.temperatura,
+            descripcion = climaCordoba.estado,
+            st = climaCordoba.st
+        )
+
+    }
+
+    private fun mostrarCABA(){
+        uiState = Estado.Exitoso(
+            ciudad = climaCABA.ciudad,
+            temperatura = climaCABA.temperatura,
+            descripcion = climaCABA.estado,
+            st = climaCABA.st
+        )
     }
 }

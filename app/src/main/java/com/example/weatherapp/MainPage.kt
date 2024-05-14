@@ -1,12 +1,15 @@
 package com.example.weatherapp
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ComposableInferredTarget
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -19,58 +22,85 @@ import com.example.weatherapp.ui.theme.WeatherAppTheme
 
 @Composable
 fun MainPage(){
-    MainView( viewModel = viewModel())
+    val viewModel: MainPageViewModel = viewModel()
+    MainView(
+        state = viewModel.uiState,
+        onAction = {
+            viewModel.ejecutarIntencion(it)
+        }
+    )
 }
 
 @Composable
 fun MainView(
     modifier: Modifier = Modifier,
-    viewModel: MainPageViewModel
+    state: Estado,
+    onAction: (Intencion)->Unit
 ) {
-
-
-
     Column (
         modifier = modifier
             .fillMaxWidth()
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        if (viewModel.noHayDatos.value){
-            Text(text = "no hay nada para mostrar")
-        } else {
-            Text(text = viewModel.ciudad.value, style = MaterialTheme.typography.titleMedium)
-
-            Text(text = "${viewModel.temperatura.value}°", style = MaterialTheme.typography.titleLarge)
-            Text(text = viewModel.descripcion.value, style = MaterialTheme.typography.bodyMedium)
-            Text(text = "sensación térmica: ${viewModel.st.value}°", style = MaterialTheme.typography.bodyMedium)
+        when(state){
+            is Estado.Error -> ErrorView(mensaje = state.mensaje)
+            is Estado.Exitoso -> ClimaView(ciudad = state.ciudad, temperatura = state.temperatura, descripcion = state.descripcion  , st = state.st )
+            Estado.Vacio -> EmptyView()
         }
 
+        Spacer(modifier = Modifier.height(100.dp))
 
         Button(
-            onClick = {viewModel.borrarTodo()}) {
+            onClick = {onAction(Intencion.BorrarTodo)}) {
             Text(text = "Borrar todo")
         }
 
         Button(
-            onClick = {viewModel.mostrarCABA()}
+            onClick = {onAction(Intencion.MostrarCABA)}
         ) {
             Text(text = "Mostrar CABA")
         }
 
         Button(
-            onClick = {viewModel.mostrarCordoba()}
+            onClick = {onAction(Intencion.MostrarCordoba)}
         ) {
-            Text(text = "Mostar Córdoba")
+            Text(text = "Mostrar Córdoba")
+        }
+
+        Button(
+            onClick = {onAction(Intencion.MostrarError)}
+        ) {
+            Text(text = "Mostrar Error")
         }
     }
 
+}
+
+@Composable
+fun ErrorView(mensaje: String){
+    Text(text = mensaje)
+}
+
+@Composable
+fun ClimaView(ciudad: String, temperatura: Int, descripcion: String, st: Int){
+    Column {
+        Text(text = ciudad, style = MaterialTheme.typography.titleMedium)
+        Text(text = "${temperatura}°", style = MaterialTheme.typography.titleLarge)
+        Text(text = descripcion, style = MaterialTheme.typography.bodyMedium)
+        Text(text = "sensación térmica: ${st}°", style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+@Composable
+fun EmptyView(){
+    Text(text = "no hay nada para mostrar")
 }
 
 @Preview(showBackground = true)
 @Composable
 fun MainPagePreview() {
     WeatherAppTheme {
-        MainView(viewModel = viewModel())
+        MainView(state = Estado.Vacio, onAction = {})
     }
 }
