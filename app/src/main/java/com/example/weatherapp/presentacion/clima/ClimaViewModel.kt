@@ -1,16 +1,16 @@
-package com.example.weatherapp
+package com.example.weatherapp.presentacion.clima
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import java.nio.file.Files.copy
+import com.example.weatherapp.repository.Clima
 
 
 // View Model expone datos del modelo. La Main Page no accede directamente al modelo
-class MainPageViewModel : ViewModel() {
+class ClimaViewModel : ViewModel() {
 
-    var uiState by mutableStateOf<Estado>(Estado.Vacio)
+    var uiState by mutableStateOf<ClimaEstado>(ClimaEstado.Vacio)
 
     // variable observada (remember para q no se pierda al recomponerse, solo cuando está dentro de un composable)
 //    val ciudad = mutableStateOf<String>("")
@@ -41,24 +41,24 @@ class MainPageViewModel : ViewModel() {
         longitud = -5837723
     )
 
-    fun ejecutarIntencion(intencion: Intencion){
+    fun ejcutar(intencion: ClimaIntencion){
         when(intencion){
-            Intencion.BorrarTodo-> borrarTodo()
-            Intencion.MostrarCABA -> mostrarCABA()
-            Intencion.MostrarCordoba -> mostrarCordoba()
-            Intencion.MostrarError -> mostrarError()
+            ClimaIntencion.BorrarTodo-> borrarTodo()
+            ClimaIntencion.MostrarCABA -> mostrarCABA()
+            ClimaIntencion.MostrarCordoba -> mostrarCordoba()
+            ClimaIntencion.MostrarError -> mostrarError()
         }
     }
 
     private fun mostrarError(){
-        uiState = Estado.Error("Este es un error de mentira")
+        uiState = ClimaEstado.Error("Este es un error de mentira")
     }
     private fun  borrarTodo(){
-        uiState = Estado.Vacio
+        uiState = ClimaEstado.Vacio
     }
 
     private fun mostrarCordoba(){
-        uiState = Estado.Exitoso(
+        uiState = ClimaEstado.Exitoso(
             ciudad = climaCordoba.ciudad,
             temperatura = climaCordoba.temperatura,
             descripcion = climaCordoba.estado,
@@ -68,7 +68,7 @@ class MainPageViewModel : ViewModel() {
     }
 
     private fun mostrarCABA(){
-        uiState = Estado.Exitoso(
+        uiState = ClimaEstado.Exitoso(
             ciudad = climaCABA.ciudad,
             temperatura = climaCABA.temperatura,
             descripcion = climaCABA.estado,
