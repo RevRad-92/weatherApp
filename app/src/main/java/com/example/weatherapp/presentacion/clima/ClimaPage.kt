@@ -5,7 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun MainPage(){
-    val viewModel: ClimaViewModel = viewModel()
+    val viewModel: ClimaViewModel = viewModel(factory = ClimaViewModel.factory)
     ClimaView(
         state = viewModel.uiState,
         onAction = {

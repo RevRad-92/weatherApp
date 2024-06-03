@@ -4,49 +4,40 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.weatherapp.repository.Clima
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.weatherapp.repository.ApiRepository
+import com.example.weatherapp.repository.MockRepository
+import com.example.weatherapp.repository.Repository
+import com.example.weatherapp.repository.models.Ciudad
+import com.example.weatherapp.repository.models.Clima
+import kotlinx.coroutines.launch
 
+class ClimaViewModel(
+    val repository: Repository
+) : ViewModel() {
 
-// View Model expone datos del modelo. La Main Page no accede directamente al modelo
-class ClimaViewModel : ViewModel() {
+    companion object{
+        val factory : ViewModelProvider.Factory  = viewModelFactory{
+            initializer {
+                val repository = ApiRepository()
+                ClimaViewModel(repository)
+            }
+        }
+    }
 
     var uiState by mutableStateOf<ClimaEstado>(ClimaEstado.Vacio)
 
-    // variable observada (remember para q no se pierda al recomponerse, solo cuando está dentro de un composable)
-//    val ciudad = mutableStateOf<String>("")
-//    val temperatura = mutableStateOf<Int>(0)
-//    val descripcion = mutableStateOf<String>("")
-//    val st = mutableStateOf<Int>(0)
-//    val noHayDatos = mutableStateOf(true)
 
-    private val climaCordoba = Clima(
-        ciudad = "Córdoba",
-        temperatura = 14,
-        estado = "nublado",
-        humedad = 18.0F,
-        st = 30,
-        viento = 30,
-        latitud = -314135,
-        longitud = -6418105
-    )
-
-    private val climaCABA = Clima(
-        ciudad = "CABA",
-        temperatura = 18,
-        estado = "Soleado",
-        humedad = 18.0F,
-        st = 30,
-        viento = 30,
-        latitud = -3461315,
-        longitud = -5837723
-    )
 
     fun ejcutar(intencion: ClimaIntencion){
         when(intencion){
             ClimaIntencion.BorrarTodo-> borrarTodo()
-            ClimaIntencion.MostrarCABA -> mostrarCABA()
             ClimaIntencion.MostrarCordoba -> mostrarCordoba()
             ClimaIntencion.MostrarError -> mostrarError()
+            ClimaIntencion.MostrarCABA -> mostrarCaba()
         }
     }
 
@@ -57,22 +48,31 @@ class ClimaViewModel : ViewModel() {
         uiState = ClimaEstado.Vacio
     }
 
+    private fun mostrarCaba(){
+
+    }
+
     private fun mostrarCordoba(){
-        uiState = ClimaEstado.Exitoso(
-            ciudad = climaCordoba.ciudad,
-            temperatura = climaCordoba.temperatura,
-            descripcion = climaCordoba.estado,
-            st = climaCordoba.st
-        )
+
+        ClimaEstado.Cargando
+        viewModelScope.launch {
+            val cordoba = Ciudad(name = "Cordoba", lat = -31.4135, lon = -64.18105, state = "Ar")
+            try{
+                val clima = repository.getClima(cordoba)
+                ClimaEstado.Exitoso(
+                    ciudad = clima.name ,
+                    temperatura = 10.0,//clima.main.temp,
+                    descripcion = "asd",//clima.weather.first().description,
+                    st = 10.2//clima.main.feelsLike,
+                )
+            } catch (exception: Exception){
+                ClimaEstado.Error("Error")
+            }
+
+
+        }
 
     }
 
-    private fun mostrarCABA(){
-        uiState = ClimaEstado.Exitoso(
-            ciudad = climaCABA.ciudad,
-            temperatura = climaCABA.temperatura,
-            descripcion = climaCABA.estado,
-            st = climaCABA.st
-        )
-    }
+
 }
