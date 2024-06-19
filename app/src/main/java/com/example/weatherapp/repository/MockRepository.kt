@@ -7,19 +7,19 @@ import com.example.weatherapp.repository.models.Clima2
 class MockRepository  : Repository {
     override suspend fun searchCiudad(ciudad: String): List<Ciudad> {
         val ciudad1 = Ciudad(
-            name = "jojo",
+            name = "King's Landing",
             lat = 23.0,
             lon = 24.3,
             state = "Argentina"
         )
         val ciudad2 = Ciudad(
-            name = "jojo",
+            name = "Winterfell",
             lat = 23.0,
             lon = 24.3,
             state = "Argentina"
         )
         val ciudad3 = Ciudad(
-            name = "jojo",
+            name = "Harrental",
             lat = 23.0,
             lon = 24.3,
             state = "Argentina"

@@ -6,33 +6,23 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.weatherapp.repository.ApiRepository
-import com.example.weatherapp.repository.MockRepository
 import com.example.weatherapp.repository.Repository
 import com.example.weatherapp.repository.models.Ciudad
-import com.example.weatherapp.repository.models.Clima
+import com.example.weatherapp.router.Router
 import kotlinx.coroutines.launch
 
 class ClimaViewModel(
-    val repository: Repository
+    val repository: Repository,
+    val router: Router
 ) : ViewModel() {
 
-    companion object{
-        val factory : ViewModelProvider.Factory  = viewModelFactory{
-            initializer {
-                val repository = ApiRepository()
-                ClimaViewModel(repository)
-            }
-        }
-    }
+
 
     var uiState by mutableStateOf<ClimaEstado>(ClimaEstado.Vacio)
 
 
 
-    fun ejcutar(intencion: ClimaIntencion){
+    fun ejecutar(intencion: ClimaIntencion){
         when(intencion){
             ClimaIntencion.BorrarTodo-> borrarTodo()
             ClimaIntencion.MostrarCordoba -> mostrarCordoba()
@@ -75,4 +65,17 @@ class ClimaViewModel(
     }
 
 
+}
+
+class ClimaViewModelFactory(
+    private val repository: Repository,
+    private val router: Router
+) : ViewModelProvider.Factory{
+    @Suppress("UNCHECKED_CAST")
+    override fun <T:ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(ClimaViewModelFactory::class.java)) {
+            return ClimaViewModelFactory(repository, router) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }

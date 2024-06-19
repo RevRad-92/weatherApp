@@ -15,8 +15,8 @@ import kotlinx.serialization.json.Json
 class ApiRepository : Repository {
 
     private val ApiKey = "0b278cab6a89a325866a0e96e605e13b"
-    private val urlGeo = "http://api.openweathermap.org/geo/1.0/direct"
-    private val urlData = "http://api.openweathermap.org/data/2.5/weather"
+    private val urlGeo = "https://api.openweathermap.org/geo/1.0/direct"
+    private val urlData = "https://api.openweathermap.org/data/2.5/weather"
 
     private val cliente = HttpClient(){
         install(ContentNegotiation){
@@ -26,10 +26,10 @@ class ApiRepository : Repository {
         }
     }
     override suspend fun searchCiudad(ciudad: String): List<Ciudad> {
-        val response = cliente.get(urlGeo){
-            parameter("q", ciudad)
-            parameter("limit", 5)
-            parameter("appid", ApiKey)
+        val response = cliente.get("https://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&limit=100&appid=0b278cab6a89a325866a0e96e605e13b"){
+//            parameter("q", ciudad)
+//            parameter("limit", 5)
+//            parameter("appid", ApiKey)
         }
         if (response.status == HttpStatusCode.OK){
             val ciudades = response.body<List<Ciudad>>()
