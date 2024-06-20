@@ -1,11 +1,10 @@
-package com.example.weatherapp.presentacion.clima
+package com.example.weatherapp.presentacion.clima.current
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,6 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 
 
@@ -22,6 +23,9 @@ fun ClimaView(
     state: ClimaEstado,
     onAction: (ClimaIntencion)->Unit
 ) {
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        onAction(ClimaIntencion.actualizarClima)
+    }
     Column (
         modifier = modifier
             .fillMaxWidth()
@@ -37,35 +41,24 @@ fun ClimaView(
                 st = state.st
             )
             ClimaEstado.Vacio -> EmptyView()
-            ClimaEstado.Cargando -> EmptyView()
+            ClimaEstado.Cargando -> LoadingView()
         }
 
         Spacer(modifier = Modifier.height(100.dp))
 
-        Button(
-            onClick = {onAction(ClimaIntencion.BorrarTodo)}) {
-            Text(text = "Borrar todo")
-        }
 
-        Button(
-            onClick = {onAction(ClimaIntencion.MostrarCABA)}
-        ) {
-            Text(text = "Mostrar CABA")
-        }
-
-        Button(
-            onClick = {onAction(ClimaIntencion.MostrarCordoba)}
-        ) {
-            Text(text = "Mostrar Córdoba")
-        }
-
-        Button(
-            onClick = {onAction(ClimaIntencion.MostrarError)}
-        ) {
-            Text(text = "Mostrar Error")
-        }
     }
 
+}
+
+@Composable
+fun LoadingView(){
+    Text(text = "Cargando")
+}
+
+@Composable
+fun EmptyView(){
+    Text(text = "no hay nada para mostrar")
 }
 
 @Composable
@@ -83,10 +76,7 @@ fun ClimaView(ciudad: String, temperatura: Double, descripcion: String, st: Doub
     }
 }
 
-@Composable
-fun EmptyView(){
-    Text(text = "no hay nada para mostrar")
-}
+
 
 @Preview(showBackground = true)
 @Composable

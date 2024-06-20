@@ -7,5 +7,5 @@ interface Router{
 
 sealed class Route(val id: String){
     data object Ciudades: Route("ciudades")
-    data class Clima(val lat: Double=0.0, val lon: Double=0.0): Route("clima")
+    data class Clima(val lat: Float, val lon: Float, val nombre:String): Route("clima")
 }

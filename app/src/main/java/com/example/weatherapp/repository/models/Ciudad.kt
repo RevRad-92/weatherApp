@@ -1,8 +1,12 @@
 package com.example.weatherapp.repository.models
 
-class Ciudad (
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class Ciudad (
     val name: String,
-    val lat: Double,
-    val lon: Double,
-    val state: String,
+    val lat: Float,
+    val lon: Float,
+    val country: String,
+    val state: String? = null,
 )

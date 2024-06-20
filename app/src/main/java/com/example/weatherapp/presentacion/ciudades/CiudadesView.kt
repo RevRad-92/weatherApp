@@ -3,7 +3,6 @@ package com.example.weatherapp.presentacion.ciudades
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -37,21 +36,22 @@ fun CiudadesView (
         when(state) {
             CiudadesEstado.Cargando -> Text(text = "cargando")
             is CiudadesEstado.Error -> Text(text = state.mensaje)
-            is CiudadesEstado.Resultado -> ListaDeCiudades(state.ciudades, {onAction(CiudadesIntencion.Seleccionar(it))})
+            is CiudadesEstado.Resultado -> ListaDeCiudades(state.ciudades) {
+                onAction(
+                    CiudadesIntencion.Seleccionar(it)
+                )
+            }
             CiudadesEstado.Vacio -> Text(text = "No hay resultados")
-        }
-        Button(onClick = { onAction(CiudadesIntencion.Seleccionar(0)) }) {
-            Text(text = "Usar Geo")
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListaDeCiudades(ciudades: List<Ciudad>, onSelect: (Int)->Unit){
+fun ListaDeCiudades(ciudades: List<Ciudad>, onSelect: (Ciudad)->Unit){
     LazyColumn {
         items(items = ciudades) {
-            Card(onClick = {onSelect(0)}) {//TODO ese indice no debe ser cero
+            Card(onClick = { onSelect(it) }) {
                 Text(text = it.name)
             }
         }

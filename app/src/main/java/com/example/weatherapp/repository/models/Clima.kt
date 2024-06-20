@@ -1,21 +1,17 @@
 package com.example.weatherapp.repository.models
 
 import kotlinx.serialization.Serializable
-data class Clima (
-    val temperatura: Int,
-    val humedad: Float,
-    val ciudad: String,
-    val st: Int,
-    val viento: Int,
-    val latitud: Long,
-    val longitud: Long,
-    val estado: String
-)
+
 
 @Serializable
-data class Clima2(
+data class Clima(
     val base: String,
     val name: String,
+    val coord: Coord,
+    val weather: List<Weather>,
+    val main: Main,
+    val wind: Wind,
+    val clouds: Clouds
 )
 @Serializable
 data class Coord(
@@ -42,18 +38,10 @@ data class Main(
 data class Wind(
     val speed: Double,
     val deg: Long,
-    val gust: Double,
+    val gust: Double? = null,
 )
 
 @Serializable
 data class Clouds(
     val all: Long,
-)
-@Serializable
-data class Sys(
-    val type: Long,
-    val id: Long,
-    val country: String,
-    val sunrise: Long,
-    val sunset: Long,
 )

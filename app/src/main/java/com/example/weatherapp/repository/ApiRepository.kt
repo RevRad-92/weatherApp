@@ -2,7 +2,8 @@ package com.example.weatherapp.repository
 
 import com.example.weatherapp.repository.models.Ciudad
 import com.example.weatherapp.repository.models.Clima
-import com.example.weatherapp.repository.models.Clima2
+import com.example.weatherapp.repository.models.ForecastDTO
+import com.example.weatherapp.repository.models.ListForecast
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -14,9 +15,9 @@ import kotlinx.serialization.json.Json
 
 class ApiRepository : Repository {
 
-    private val ApiKey = "0b278cab6a89a325866a0e96e605e13b"
-    private val urlGeo = "https://api.openweathermap.org/geo/1.0/direct"
-    private val urlData = "https://api.openweathermap.org/data/2.5/weather"
+    private val apiKey = "0b278cab6a89a325866a0e96e605e13b"
+//    private val urlGeo = "https://api.openweathermap.org/geo/1.0/direct"
+//    private val urlData = "https://api.openweathermap.org/data/2.5/weather"
 
     private val cliente = HttpClient(){
         install(ContentNegotiation){
@@ -26,10 +27,10 @@ class ApiRepository : Repository {
         }
     }
     override suspend fun searchCiudad(ciudad: String): List<Ciudad> {
-        val response = cliente.get("https://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&limit=100&appid=0b278cab6a89a325866a0e96e605e13b"){
-//            parameter("q", ciudad)
-//            parameter("limit", 5)
-//            parameter("appid", ApiKey)
+        val response = cliente.get("https://api.openweathermap.org/geo/1.0/direct"){
+            parameter("q",ciudad)
+            parameter("limit",100)
+            parameter("appid",apiKey)
         }
         if (response.status == HttpStatusCode.OK){
             val ciudades = response.body<List<Ciudad>>()
@@ -39,22 +40,32 @@ class ApiRepository : Repository {
         }
     }
 
-    override suspend fun getClima(ciudad: Ciudad): Clima2 {
-        val response = cliente.get(urlData){
-            parameter("lat", ciudad.lat)
-            parameter("lon", ciudad.lon)
+    override suspend fun getClima(lat: Float, lon: Float): Clima {
+        val response = cliente.get("https://api.openweathermap.org/data/2.5/weather"){
+            parameter("lat", lat)
+            parameter("lon", lon)
             parameter("units", "metric")
-            parameter("appid", ApiKey)
+            parameter("appid", apiKey)
         }
         if (response.status == HttpStatusCode.OK){
-            val clima = response.body<Clima2>()
+            val clima = response.body<Clima>()
             return clima
         } else {
             throw Exception()
         }
     }
 
-    override suspend fun getForecast(ciudad: Ciudad): List<Clima2> {
-        TODO("Not yet implemented")
+    override suspend fun getForecast(nombre: String): List<ListForecast> {
+        val respuesta = cliente.get("https://api.openweathermap.org/data/2.5/forecast"){
+            parameter("q",nombre)
+            parameter("units","metric")
+            parameter("appid",apiKey)
+        }
+        if (respuesta.status == HttpStatusCode.OK){
+            val forecast = respuesta.body<ForecastDTO>()
+            return forecast.list
+        }else{
+            throw Exception()
+        }
     }
 }
